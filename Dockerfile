@@ -1,15 +1,22 @@
-FROM python:3.10-slim-bullseye
+# Python Based Docker
+FROM python:latest
 
+# Installing Packages
+RUN apt update && apt upgrade -y
+RUN apt install git curl python3-pip ffmpeg aria2 -y
 
-RUN apt-get update \
- && apt-get upgrade -y \
- && apt-get install -y --no-install-recommends gcc libffi-dev musl-dev ffmpeg aria2 python3-pip \
- && apt-get clean \
- && rm -rf /var/lib/apt/lists/*
+# Updating Pip Packages
+RUN pip3 install -U pip
 
-COPY . /app/
-WORKDIR /app/
-RUN pip3 install --no-cache-dir --upgrade -r requirements.txt
-RUN pip install pytube
-ENV COOKIES_FILE_PATH="youtube_cookies.txt"
-CMD gunicorn app:app & python3 main.py
+# Copying Requirements
+COPY requirements.txt /requirements.txt
+
+# Installing Requirements
+RUN cd /
+RUN pip3 install -U -r requirements.txt
+RUN mkdir /EXTRACTOR
+WORKDIR / EXTRACTOR
+COPY start.sh /start.sh
+
+# Running MessageSearchBot
+CMD ["/bin/bash", "/start.sh"
